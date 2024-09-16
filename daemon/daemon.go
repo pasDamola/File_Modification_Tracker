@@ -85,7 +85,7 @@ func (d *Daemon) timerThread() {
 
 			t := time.Unix(ctimeUnix, 0)
 
-			// Format time as "yy/mm/dd hh:mm AM/PM"
+			// Format time as "yy/mm/dd hh:mm AM/PM for easier understanding"
 			formattedTime := t.Format("06/01/02 03:04 PM")
 			logText := fmt.Sprintf("File modified: %s at time: %v", result["path"], formattedTime)
 			d.Logs = append(d.Logs, logText)

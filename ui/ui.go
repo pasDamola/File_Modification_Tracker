@@ -15,9 +15,8 @@ func StartUI(d *daemon.Daemon) {
 
 	startButton := widget.NewButton("Start Service", func() {
 		go func() {
-			d.Start() // Start the daemon
-			// Start the API in a separate goroutine
-			go api.StartAPI(d) // Assuming you have a StartAPI method in your Daemon struct
+			d.Start()
+			go api.StartAPI(d)
 			widget.ShowPopUp(widget.NewLabel("Service Started"), myWindow.Canvas())
 		}()
 	})
