@@ -12,7 +12,7 @@ File Modification Tracker is a macOS application that monitors specified directo
 
 ## Installation
 
-1. Download the latest release from [releases](link-to-your-releases).
+1. Download the latest release from [here](https://github.com/pasDamola/File_Modification_Tracker/blob/main/File-Tracker.pkg).
 2. Open the downloaded `.pkg` file.
 3. Follow the installation instructions.
 
