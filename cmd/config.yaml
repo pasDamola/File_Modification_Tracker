@@ -1,0 +1,3 @@
+directory: "/Users/oyincode/Desktop/test_file" # Path checking file modifications.
+frequency: 1 # Frequency in minutes for checking file modifications.
+socket_path: "/Users/oyincode/.osquery/shell.em"  # Path to the Osquery extension socket.
