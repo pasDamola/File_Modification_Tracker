@@ -2,7 +2,10 @@ module github.com/pasDamola/file-tracker
 
 go 1.22.4
 
-require github.com/osquery/osquery-go v0.0.0-20240910233439-561a72587be6
+require (
+	github.com/go-playground/validator/v10 v10.22.1
+	github.com/osquery/osquery-go v0.0.0-20240910233439-561a72587be6
+)
 
 require (
 	fyne.io/systray v1.11.0 // indirect
@@ -21,7 +24,6 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.22.1 // indirect
 	github.com/go-text/render v0.1.1-0.20240418202334-dd62631dae9b // indirect
 	github.com/go-text/typesetting v0.1.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
