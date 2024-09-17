@@ -1,8 +1,6 @@
 package ui
 
 import (
-	"fmt"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -12,7 +10,6 @@ import (
 )
 
 func StartUI(d *daemon.Daemon) {
-	fmt.Println("Starting Fyne UI")
 	myApp := app.New()
 	myWindow := myApp.NewWindow("File Modification Tracker")
 
@@ -33,7 +30,6 @@ func StartUI(d *daemon.Daemon) {
 		startButton,
 		stopButton,
 	))
-	fmt.Println("Where we are")
 
 	size := fyne.NewSize(300, 200)
 	myWindow.Resize(size)

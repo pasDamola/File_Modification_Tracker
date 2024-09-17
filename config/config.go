@@ -1,14 +1,17 @@
 package config
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/spf13/viper"
 )
 
 type Config struct {
-	Directory  string `mapstructure:"directory"`
-	Frequency  int    `mapstructure:"frequency"`
-	SocketPath string `mapstructure:"socket_path"`
+	Directory  string `mapstructure:"directory" validate:"required"`
+	Frequency  int    `mapstructure:"frequency" validate:"required,min=1"`
+	SocketPath string `mapstructure:"socket_path" validate:"required"`
 }
+
+var validate *validator.Validate
 
 func LoadConfig() (Config, error) {
 	var config Config
@@ -21,5 +24,15 @@ func LoadConfig() (Config, error) {
 	}
 
 	err := viper.Unmarshal(&config)
-	return config, err
+	if err != nil {
+		return config, err
+	}
+
+	validate = validator.New()
+	err = validate.Struct(config)
+	if err != nil {
+		return config, err
+	}
+
+	return config, nil
 }
