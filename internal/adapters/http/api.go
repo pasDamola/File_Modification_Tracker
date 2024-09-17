@@ -1,4 +1,4 @@
-package api
+package http
 
 import (
 	"encoding/json"
@@ -6,19 +6,19 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/pasDamola/file-tracker/daemon"
+	"github.com/pasDamola/file-tracker/internal/core/ports"
+	"github.com/pasDamola/file-tracker/internal/core/services"
 )
 
 var (
 	mu sync.Mutex
 )
 
-func StartAPI(d *daemon.Daemon) {
+func StartAPI(fileService ports.FileService, daemon *services.Daemon) {
 	http.HandleFunc("/execute", func(w http.ResponseWriter, r *http.Request) {
-		type executeRequest struct {
+		var req struct {
 			Commands []string `json:"commands"`
 		}
-		var req executeRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			http.Error(w, "Invalid request", http.StatusBadRequest)
 			return
@@ -29,50 +29,33 @@ func StartAPI(d *daemon.Daemon) {
 				http.Error(w, "Command not allowed", http.StatusForbidden)
 				return
 			}
-			d.WorkerQueue <- command
+			daemon.QueueCommand(command)
 		}
 		w.WriteHeader(http.StatusAccepted)
 	})
 
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		healthCheckHandler(w, r, d)
+		mu.Lock()
+		defer mu.Unlock()
+
+		if !daemon.IsWorkerThreadRunning() || !daemon.IsTimerThreadRunning() {
+			http.Error(w, "Service is not healthy", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Service is running"))
 	})
 
 	http.HandleFunc("/logs", func(w http.ResponseWriter, r *http.Request) {
-		logsHandler(w, r, d)
+		mu.Lock()
+		defer mu.Unlock()
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(fileService.GetLogs())
 	})
 
 	http.ListenAndServe(":8080", nil)
-}
-
-func healthCheckHandler(w http.ResponseWriter, r *http.Request, d *daemon.Daemon) {
-	mu.Lock()
-	defer mu.Unlock()
-
-	select {
-	case <-d.WorkerThreadDone:
-		http.Error(w, "Worker thread not running", http.StatusInternalServerError)
-		return
-	default:
-	}
-
-	select {
-	case <-d.TimerThreadDone:
-		http.Error(w, "Timer thread not running", http.StatusInternalServerError)
-		return
-	default:
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Service is running"))
-}
-
-func logsHandler(w http.ResponseWriter, r *http.Request, d *daemon.Daemon) {
-	mu.Lock()
-	defer mu.Unlock()
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(d.Logs)
 }
 
 func isReadOnlyCommand(command string) bool {
